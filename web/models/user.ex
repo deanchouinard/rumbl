@@ -34,5 +34,6 @@ defmodule Rumbl.User do
     end
   end
 
+
 end
 
