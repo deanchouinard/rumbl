@@ -16,7 +16,7 @@ defmodule Rumbl.SessionController do
       {:error, _reason, conn} ->
         conn
         |> put_flash(:error, "Invalid username/password combination")
-        |> render("new.html)
+        |> render("new.html")
     end
   end
 
