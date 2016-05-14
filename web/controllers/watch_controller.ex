@@ -1,4 +1,4 @@
-defmoudule Rumbl.WatchController do
+defmodule Rumbl.WatchController do
   use Rumbl.Web, :controller
   alias Rumbl.Video
 
