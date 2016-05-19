@@ -14,7 +14,7 @@ defmodule Rumbl.InfoSys do
     backends = opts[:backends] || @backends
 
     backends
-    |> Enum.map(&spawn_query(&1, query, limit)
+    |> Enum.map(&spawn_query(&1, query, limit))
   end
 
   defp spawn_query(backend, query, limit) do
