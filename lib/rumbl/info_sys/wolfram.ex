@@ -9,8 +9,8 @@ defmodule Rumbl.InfoSys.Wolfram do
   def fetch(query_str, query_ref, owner, _limit) do
     query_str
     |> fetch_xml()
-    |> xpath(~x"/queryresult/pod[contains(@title, `Result`) or
-                                contains(@title, `Definitions`)]
+    |> xpath(~x"/queryresult/pod[contains(@title, 'Result') or
+                                contains(@title, 'Definitions')]
                             /subpod/plaintext/text()")
     |> send_results(query_ref, owner)
   end
@@ -25,6 +25,9 @@ defmodule Rumbl.InfoSys.Wolfram do
 
   defp fetch_xml(query_str) do
     IO.puts "fx start"
+    IO.puts query_str
+    IO.puts app_id()
+
     {:ok, {_, _, body}} = :httpc.request(
       String.to_char_list("http://api.wolframalpha.com/v2/query" <>
         "?appid=#{app_id()}" <>
@@ -34,6 +37,6 @@ defmodule Rumbl.InfoSys.Wolfram do
     IO.inspect(body)
   end
 
-  defp app_id, do: Application.get_env(:rumbl, :wolfram)[app_id]
+  defp app_id, do: Application.get_env(:rumbl, :wolfram)[:app_id]
 end
 
