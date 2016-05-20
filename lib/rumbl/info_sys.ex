@@ -28,8 +28,12 @@ defmodule Rumbl.InfoSys do
     {pid, monitor_ref, query_ref}
   end
 
-  defp await_results(children, _opts) do
-    await_result(children, [], :infinity)
+  defp await_results(children, opts) do
+    timeout = opts[:timeout] || 9000
+    timer = Process.send_after(self(), :timeout, timeout)
+    results = await_result(children, [], :infinity)
+    cleanup(timer)
+    results
   end
 
   defp await_result([head|tail], acc, timeout) do
@@ -41,11 +45,32 @@ defmodule Rumbl.InfoSys do
         await_result(tail, results ++ acc, timeout)
       {:DOWN, ^monitor_ref, :process, ^pid, _reason} ->
         await_result(tail, acc, timeout)
+      :timeout ->
+        kill(pid, monitor_ref)
+        await_result(tail, acc, 0)
+    after
+      timeout ->
+        kill(pid, monitor_ref)
+        await_result(tail, acc, 0)
     end
   end
 
   defp await_result([], acc, _) do
     acc
+  end
+
+  defp kill(pid, ref) do
+    Process.demonitor(ref, [:flush])
+    Process.exit(pid, :kill)
+  end
+
+  defp cleanup(timer) do
+    :erlang.cancel_timer(timer)
+    receive do
+      :timout -> :ok
+    after
+      0 -> :k
+    end
   end
 
 end
